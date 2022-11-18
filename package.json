@@ -2,12 +2,15 @@
   "name": "vitest-environment-vprisma",
   "version": "0.0.0",
   "description": "Vitest environment for testing with prisma.",
-  "main": "./dist/environmnet.js",
+  "main": "./dist/environmnet.mjs",
   "types": "./dist/types.d.ts",
   "type": "module",
   "repository": "git@github.com:aiji42/vitest-environment-vprisma.git",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
   "peerDependencies": {
     "vitest": "*",
     "@prisma/client": ">=4.6.0"
@@ -18,6 +21,6 @@
   "devDependencies": {
     "prettier": "^2.7.1",
     "typescript": "^4.9.3",
-    "vite": "^3.2.4"
+    "vitest": "^0.25.2"
   }
 }
