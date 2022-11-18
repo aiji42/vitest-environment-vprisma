@@ -7,5 +7,17 @@
   "type": "module",
   "repository": "git@github.com:aiji42/vitest-environment-vprisma.git",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "vitest": "*",
+    "@prisma/client": ">=4.6.0"
+  },
+  "dependencies": {
+    "@quramy/jest-prisma-core": "^1.1.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1",
+    "typescript": "^4.9.3",
+    "vite": "^3.2.4"
+  }
 }
