@@ -1,0 +1,11 @@
+{
+  "name": "vitest-environment-vprisma",
+  "version": "0.0.0",
+  "description": "Vitest environment for testing with prisma.",
+  "main": "./dist/environmnet.js",
+  "types": "./dist/types.d.ts",
+  "type": "module",
+  "repository": "git@github.com:aiji42/vitest-environment-vprisma.git",
+  "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
+  "license": "MIT"
+}
