@@ -5,6 +5,15 @@
   "main": "./dist/environmnet.mjs",
   "types": "./dist/types.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "default": "./dist/environment.mjs"
+    },
+    "./setup": {
+      "default": "./dist/setup.mjs"
+    }
+  },
+  "files": ["dist"],
   "repository": "git@github.com:aiji42/vitest-environment-vprisma.git",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
@@ -13,7 +22,7 @@
   },
   "peerDependencies": {
     "vitest": "*",
-    "@prisma/client": ">=4.6.0"
+    "@prisma/client": "^2.29.0 || ^3.0.0 || ^4.0.0"
   },
   "dependencies": {
     "@quramy/jest-prisma-core": "^1.1.2"
