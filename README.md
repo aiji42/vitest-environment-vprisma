@@ -1,5 +1,5 @@
 # vitest-environment-vprisma
-This library improves the experience of testing with vitest and @prisma/client. It allows you to isolate each test case with a transaction and also rollback after completion, giving you a safe and clean testing environment.
+This library improves the experience of testing with vitest and @prisma/client. It allows you to isolate each test case with a transaction and rollback after completion, giving you a safe and clean testing environment.
 
 ## Install
 
@@ -22,7 +22,7 @@ export default defineConfig({
 });
 ```
 
-```json
+```ts
 // tsconfig.json
 {
   "compilerOptions": {
