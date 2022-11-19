@@ -1,5 +1,12 @@
 import type { Environment } from "vitest";
-import { PrismaEnvironmentDelegate } from "@quramy/jest-prisma-core";
+import {
+  JestPrisma,
+  PrismaEnvironmentDelegate,
+} from "@quramy/jest-prisma-core";
+
+declare global {
+  var vPrisma: JestPrisma;
+}
 
 export default {
   name: "vprisma",

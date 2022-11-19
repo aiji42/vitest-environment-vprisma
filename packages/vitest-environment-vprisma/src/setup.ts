@@ -1,19 +1,19 @@
-import { afterEach, beforeEach } from "vitest";
-
 declare global {
   var vPrismaDelegate: {
     handleTestEvent: (param: { name: string; test?: any }) => Promise<void>;
   };
+  var beforeEach: (fn: () => Promise<void>) => void;
+  var afterEach: (fn: () => Promise<void>) => void;
 }
 
-beforeEach(async () => {
+global.beforeEach(async () => {
   await Promise.all([
     global.vPrismaDelegate.handleTestEvent({ name: "test_start" }),
     global.vPrismaDelegate.handleTestEvent({ name: "test_fn_start" }),
   ]);
 });
 
-afterEach(async () => {
+global.afterEach(async () => {
   await Promise.all([
     global.vPrismaDelegate.handleTestEvent({ name: "test_done" }),
     global.vPrismaDelegate.handleTestEvent({
@@ -22,3 +22,5 @@ afterEach(async () => {
     }),
   ]);
 });
+
+export {};

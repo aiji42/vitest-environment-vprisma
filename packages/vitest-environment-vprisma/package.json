@@ -2,22 +2,27 @@
   "name": "vitest-environment-vprisma",
   "version": "0.0.0",
   "description": "Vitest environment for testing with prisma.",
-  "main": "./dist/environmnet.js",
-  "types": "./dist/types.d.ts",
+  "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/environment.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./setup": {
-      "default": "./dist/setup.js"
+      "import": "./dist/setup.mjs",
+      "require": "./dist/setup.cjs"
     }
   },
-  "files": ["dist"],
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "repository": "git@github.com:aiji42/vitest-environment-vprisma.git",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
   "scripts": {
-    "build": "tsc"
+    "build": "unbuild"
   },
   "peerDependencies": {
     "vitest": "*",
@@ -29,6 +34,7 @@
   "devDependencies": {
     "prettier": "^2.7.1",
     "typescript": "^4.9.3",
+    "unbuild": "^1.0.1",
     "vitest": "^0.25.2"
   }
 }
