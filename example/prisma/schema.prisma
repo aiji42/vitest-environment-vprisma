@@ -18,3 +18,10 @@ model User {
   nickname  String
   email     String   @unique
 }
+
+model Team {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   @unique
+}

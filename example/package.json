@@ -11,7 +11,8 @@
     "prisma": "^4.6.1",
     "typescript": "^4.9.3",
     "vitest": "^0.25.2",
-    "vitest-environment-vprisma": "../packages/vitest-environment-vprisma"
+    "vitest-environment-vprisma": "../packages/vitest-environment-vprisma",
+    "zx": "^7.1.1"
   },
   "dependencies": {
     "@prisma/client": "^4.6.1"

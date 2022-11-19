@@ -1,6 +1,6 @@
 const prisma = vPrisma.client;
 
-describe("User", () => {
+describe("prisma", () => {
   test("Add user", async () => {
     const createdUser = await prisma.user.create({
       data: {

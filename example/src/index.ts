@@ -18,3 +18,15 @@ export const createUsers = (data: { nickname: string; email: string }[]) => {
 export const countUser = () => {
   return client.user.count();
 };
+
+export const createTeam = (name: string) => {
+  return client.team.create({
+    data: {
+      name,
+    },
+  });
+};
+
+export const countTeam = () => {
+  return client.team.count();
+};

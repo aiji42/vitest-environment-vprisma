@@ -5,5 +5,6 @@ export default defineConfig({
     globals: true,
     environment: "vprisma",
     setupFiles: ["vitest-environment-vprisma/setup", "./vitest.setup"],
+    globalSetup: ["./vitest.globalSetup"],
   },
 });
