@@ -1,6 +1,6 @@
 beforeEach(async () => {
-  // ⛔ vPrisma.client is not available for top-level beforeEach.
-  // if you want to use beforeEach to prepare data, please execute it in `describe`.
+  // ❌ vPrisma.client is not available for top-level beforeEach.
+  // see https://github.com/aiji42/vitest-environment-vprisma#hooks-beforeeach-and-beforeall
 });
 
 const prisma = vPrisma.client;
@@ -8,7 +8,6 @@ const prisma = vPrisma.client;
 describe("prisma", () => {
   describe("add User in beforeEach", () => {
     beforeEach(async () => {
-      // Since it is in `describe`, you can use vPrisma.client to issue secure queries with transaction isolation.
       await prisma.user.create({
         data: {
           nickname: "userX",

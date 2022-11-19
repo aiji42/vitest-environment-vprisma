@@ -126,7 +126,7 @@ vi.mock("./libs/client", () => ({
 }));
 ```
 
-## environmentOptions
+## Options
 
 It is possible to pass option values using `environmentOptions`. This affects the entire test.
 
@@ -165,21 +165,18 @@ test("Add user", async () => {
 ### hooks (beforeEach and beforeAll)
 
 You cannot use vPrisma.client within a top-level `beforeEach`. This is because it is executed before the `vPrisma` initialization is complete.  
-If you wish to use `beforeEach` to perform data preparation or other operations, please describe them in a `describe`.
+If you want to use `beforeEach` to perform data preparation or other operations, please write them within `describe`.
 
 ```ts
 const prisma = vPrisma.client;
 
-// ❌
 beforeEach(async () => {
-  // vPrisma.client is not available for top-level beforeEach.
-  // if you want to use beforeEach to prepare data, please execute it in `describe`.
+  // ❌ vPrisma.client is not available for top-level beforeEach.
 });
 
 describe(" ... ", () => {
-  // ✅
   beforeEach(async () => {
-    // Since it is in `describe`, you can use vPrisma.client to issue secure queries with transaction isolation.
+    // ✅ You can use vPrisma.client.
     await prisma.user.create({
       data: {
         nickname: "userX",
