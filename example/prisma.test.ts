@@ -1,4 +1,4 @@
-const prisma = jestPrisma.client;
+const prisma = vPrisma.client;
 
 describe("User", () => {
   test("Add user", async () => {

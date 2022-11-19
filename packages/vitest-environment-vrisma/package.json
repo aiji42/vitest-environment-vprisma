@@ -2,15 +2,14 @@
   "name": "vitest-environment-vprisma",
   "version": "0.0.0",
   "description": "Vitest environment for testing with prisma.",
-  "main": "./dist/environmnet.mjs",
+  "main": "./dist/environmnet.js",
   "types": "./dist/types.d.ts",
-  "type": "module",
   "exports": {
     ".": {
-      "default": "./dist/environment.mjs"
+      "default": "./dist/environment.js"
     },
     "./setup": {
-      "default": "./dist/setup.mjs"
+      "default": "./dist/setup.js"
     }
   },
   "files": ["dist"],
