@@ -1,6 +1,31 @@
+beforeEach(async () => {
+  // ⛔ vPrisma.client is not available for top-level beforeEach.
+  // if you want to use beforeEach to prepare data, please execute it in `describe`.
+});
+
 const prisma = vPrisma.client;
 
 describe("prisma", () => {
+  describe("add User in beforeEach", () => {
+    beforeEach(async () => {
+      // Since it is in `describe`, you can use vPrisma.client to issue secure queries with transaction isolation.
+      await prisma.user.create({
+        data: {
+          nickname: "userX",
+          email: "userX@example.com",
+        },
+      });
+    });
+
+    test("Count user first time", async () => {
+      expect(await prisma.user.count()).toBe(1);
+    });
+
+    test("Count user second time", async () => {
+      expect(await prisma.user.count()).toBe(1);
+    });
+  });
+
   test("Add user", async () => {
     const createdUser = await prisma.user.create({
       data: {
@@ -12,14 +37,14 @@ describe("prisma", () => {
     expect(
       await prisma.user.findFirst({
         where: {
-          nickname: "user1",
+          id: createdUser.id,
         },
       })
     ).toStrictEqual(createdUser);
     expect(await prisma.user.count()).toBe(1);
   });
 
-  test("Add users on transaction", async () => {
+  test("Add users in transaction", async () => {
     const [user1, user2] = await prisma.$transaction(async (t) => {
       const user1 = await t.user.create({
         data: {
@@ -39,7 +64,7 @@ describe("prisma", () => {
     expect(
       await prisma.user.findFirst({
         where: {
-          nickname: "user1",
+          id: user1.id,
         },
       })
     ).toStrictEqual(user1);
@@ -47,7 +72,7 @@ describe("prisma", () => {
     expect(
       await prisma.user.findFirst({
         where: {
-          nickname: "user2",
+          id: user2.id,
         },
       })
     ).toStrictEqual(user2);
@@ -56,20 +81,5 @@ describe("prisma", () => {
 
   test("Count user", async () => {
     expect(await prisma.user.count()).toBe(0);
-  });
-
-  describe("add User in beforeEach", () => {
-    beforeEach(async () => {
-      await prisma.user.create({
-        data: {
-          nickname: "userX",
-          email: "userX@example.com",
-        },
-      });
-    });
-
-    test("Count user", async () => {
-      expect(await prisma.user.count()).toBe(1);
-    });
   });
 });
