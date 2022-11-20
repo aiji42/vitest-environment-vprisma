@@ -1,3 +1,6 @@
+[![Release](https://github.com/aiji42/vitest-environment-vprisma/actions/workflows/release.yml/badge.svg)](https://github.com/aiji42/vitest-environment-vprisma/actions/workflows/release.yml)
+[![npm version](https://badge.fury.io/js/vitest-environment-vprisma.svg)](https://badge.fury.io/js/vitest-environment-vprisma)
+
 # vitest-environment-vprisma
 This library improves the experience of testing with vitest and @prisma/client. It allows you to isolate each test case with a transaction and rollback after completion, giving you a safe and clean testing environment.
 
