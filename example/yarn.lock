@@ -736,7 +736,7 @@ vite@^3.0.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vitest-environment-vprisma@../packages/vitest-environment-vprisma:
+vitest-environment-vprisma@../:
   version "0.0.0"
   dependencies:
     "@quramy/jest-prisma-core" "^1.1.2"
