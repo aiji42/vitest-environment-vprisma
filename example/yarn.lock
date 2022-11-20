@@ -736,8 +736,10 @@ vite@^3.0.0:
   optionalDependencies:
     fsevents "~2.3.2"
 
-vitest-environment-vprisma@../:
-  version "0.0.0"
+vitest-environment-vprisma@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/vitest-environment-vprisma/-/vitest-environment-vprisma-1.0.0.tgz#8f1e3569e060663d2a71126354b732290efba99c"
+  integrity sha512-JxQcTB8QqEEIqzIlvzAQQvjnFeln26LzNnpoQ16aDCrwewgYw1FRu3JHLY7d/SoGw8nP8rzLd60yuyT9iU+gvQ==
   dependencies:
     "@quramy/jest-prisma-core" "^1.1.2"
 
