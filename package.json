@@ -1,6 +1,6 @@
 {
   "name": "vitest-environment-vprisma",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "Vitest environment for testing with prisma.",
   "type": "module",
   "exports": {
@@ -22,7 +22,9 @@
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
   "scripts": {
-    "build": "unbuild"
+    "build": "unbuild",
+    "prepack": "yarn build",
+    "semantic-release": "semantic-release"
   },
   "peerDependencies": {
     "@prisma/client": "^2.29.0 || ^3.0.0 || ^4.0.0",
@@ -35,6 +37,10 @@
     "prettier": "^2.7.1",
     "typescript": "^4.9.3",
     "unbuild": "^1.0.1",
-    "vitest": "^0.25.2"
+    "vitest": "^0.25.2",
+    "semantic-release": "^19.0.5"
+  },
+  "release": {
+    "branches": ["main", { "name": "beta", "prerelease": true }]
   }
 }
