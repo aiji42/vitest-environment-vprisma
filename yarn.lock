@@ -553,10 +553,10 @@
   dependencies:
     "@octokit/openapi-types" "^14.0.0"
 
-"@quramy/jest-prisma-core@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@quramy/jest-prisma-core/-/jest-prisma-core-1.1.2.tgz#1c33cb0a4ed61c50eb55564447516ce77a76136d"
-  integrity sha512-V58vTmw+XyytNWr4hho7YLNHu59ivqvg7Nu9U2cDztXVWwpipbSZTya8tmcOKCU8uCEHlT83hWOwjeXNZCmW0g==
+"@quramy/jest-prisma-core@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@quramy/jest-prisma-core/-/jest-prisma-core-1.2.0.tgz#1b1c76f5fc09b60cfb69d053f41852cec325991e"
+  integrity sha512-7Q0CwSFNT2of0E+9w+ordY7hwnrIuZjk3DOlHwYa+C+UjhJU8lc12f1lVXui9rqeH6tLTAe7I2asYI3EYYwOFA==
   dependencies:
     chalk "^4.0.0"
 

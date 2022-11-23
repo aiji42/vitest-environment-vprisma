@@ -143,10 +143,14 @@ export default defineConfig({
     environment: "vprisma",
     setupFiles: ["vitest-environment-vprisma/setup"],
     environmentOptions: {
-      // Display the query in the log. (default: false)
-      verboseQuery: true,
-      // Commit without rolling back the transaction.. (default: false)
-      disableRollback: true,
+      vprisma: {
+        // Display the query in the log. (default: false)
+        verboseQuery: true,
+        // Commit without rolling back the transaction. (default: false)
+        disableRollback: true,
+        // Override the database connection URL. (default: process.env.DATABASE_URL)
+        databaseUrl: "postgresql://postgres:password@localhost:5432/test?schema=public"
+      }
     },
   },
 });

@@ -31,7 +31,7 @@
     "vitest": "*"
   },
   "dependencies": {
-    "@quramy/jest-prisma-core": "^1.1.2"
+    "@quramy/jest-prisma-core": "^1.2.0"
   },
   "devDependencies": {
     "prettier": "^2.7.1",
