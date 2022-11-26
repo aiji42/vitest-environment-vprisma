@@ -144,6 +144,8 @@ export default defineConfig({
     setupFiles: ["vitest-environment-vprisma/setup"],
     environmentOptions: {
       vprisma: {
+        // Selectable a base environment "node" | "jsdom" | "happy-dom" | "edge-runtime" (default: "node") 
+        baseEnv: "jsdom",
         // Display the query in the log. (default: false)
         verboseQuery: true,
         // Commit without rolling back the transaction. (default: false)
@@ -157,7 +159,7 @@ export default defineConfig({
 ```
 
 It is also possible to specify these option values for each test file.  
-Use the format `// @vitest-environment-options { "key": "value" }`. Option values are in JSON format.
+Use the format `// @vitest-environment-options { "key": "value" }`. Option values are in JSON format.  
 ```ts
 // example.test.ts
 
@@ -166,6 +168,7 @@ test("Add user", async () => {
   /* ... */
 });
 ```
+Note that any `environmentOptions` set in `vitest.config.ts` will be overwritten.
 
 ## Tips
 
