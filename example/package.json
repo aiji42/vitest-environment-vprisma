@@ -12,7 +12,7 @@
     "prisma": "^4.6.1",
     "typescript": "^4.9.3",
     "vitest": "^0.25.2",
-    "vitest-environment-vprisma": "1.2.0-beta.1",
+    "vitest-environment-vprisma": "1.2.0",
     "zx": "^7.1.1"
   },
   "dependencies": {
