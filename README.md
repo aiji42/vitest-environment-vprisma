@@ -125,7 +125,7 @@ export default defineConfig({
 import { vi } from "vitest";
 
 vi.mock("./libs/client", () => ({
-  client: vPrisma.client,
+  prisma: vPrisma.client,
 }));
 ```
 
