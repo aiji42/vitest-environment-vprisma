@@ -88,7 +88,7 @@ If you are using an instance of `PrismaClient` as a singleton, such as:
 // libs/client.ts
 import { PrismaClient } from "@prisma/client";
 
-export const prisma = new PrismaClient();
+export const client = new PrismaClient();
 ```
 
 ```ts
