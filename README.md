@@ -34,13 +34,10 @@ export default defineConfig({
 }
 ```
 
-`vitest-environment-vprisma` uses [Prisma interactive transaction feature](https://www.prisma.io/docs/concepts/components/prisma-client/transactions#interactive-transactions-in-preview).
-
 ```prisma
 // schema.prisma
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  provider = "prisma-client-js"
 }
 ```
 
