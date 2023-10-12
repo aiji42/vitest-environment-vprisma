@@ -18,6 +18,7 @@ type Options = {
 
 const environment: Environment = {
   name: "vprisma",
+  transformMode: "ssr",
   async setup(global, options: Options) {
     const { baseEnv, ...vprisma } = options.vprisma ?? {};
     const env = builtinEnvironments[baseEnv ?? "node"];
