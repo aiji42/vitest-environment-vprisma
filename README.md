@@ -34,13 +34,6 @@ export default defineConfig({
 }
 ```
 
-```prisma
-// schema.prisma
-generator client {
-  provider = "prisma-client-js"
-}
-```
-
 ## How to use
 
 If you are using an instance of `PrismaClient` in your test file to issue queries, use `vPrisma.client` instead. If setup is correct, it will be provided as a global object.
