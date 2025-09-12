@@ -3,6 +3,10 @@
   "version": "0.0.0-development",
   "description": "Vitest environment for testing with prisma.",
   "type": "module",
+  "engines": {
+    "node": ">=22.15.0"
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
@@ -27,19 +31,19 @@
     "semantic-release": "semantic-release"
   },
   "peerDependencies": {
-    "@prisma/client": "^2.29.0 || ^3.0.0 || ^4.0.0 || ^5.0.0",
+    "@prisma/client": "^2.29.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0",
     "vitest": "*"
   },
   "dependencies": {
-    "@quramy/jest-prisma-core": "^1.7.2"
+    "@quramy/jest-prisma-core": "^1.8.1"
   },
   "devDependencies": {
-    "@types/node": "^20.10.4",
+    "@types/node": "^22.18.1",
     "prettier": "^3.1.0",
     "semantic-release": "^22.0.10",
     "typescript": "^5.3.3",
     "unbuild": "^2.0.0",
-    "vitest": "^1.0.2"
+    "vitest": "^3.2.4"
   },
   "release": {
     "branches": [
