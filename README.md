@@ -4,11 +4,11 @@
 # vitest-environment-vprisma
 This library improves the experience of testing with vitest and @prisma/client. It allows you to isolate each test case with a transaction and rollback after completion, giving you a safe and clean testing environment.
 
-## Requirements                                                                                                               │
-                                                                                                                              │
-- Node.js >= 22.15.0                                                                                                          │
-- Vitest (any version)                                                                                                        │
-- Prisma Client                                                                                                               │
+## Requirements for Prisma 6.x
+
+- Node.js >= 22.19.0
+- Vitest (any version)
+- Prisma Client 6.x
 
 ## Install
 
