@@ -2,6 +2,7 @@
 [![npm version](https://badge.fury.io/js/vitest-environment-vprisma.svg)](https://badge.fury.io/js/vitest-environment-vprisma)
 
 # vitest-environment-vprisma
+
 This library improves the experience of testing with vitest and @prisma/client. It allows you to isolate each test case with a transaction and rollback after completion, giving you a safe and clean testing environment.
 
 ## Install
@@ -18,9 +19,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   test: {
-    globals: true,  // Don't forget!
+    globals: true, // Don't forget!
     environment: "vprisma",
-    setupFiles: ["vitest-environment-vprisma/setup"]
+    setupFiles: ["vitest-environment-vprisma/setup"],
   },
 });
 ```
@@ -105,7 +106,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "vprisma",
-    setupFiles: ["vitest-environment-vprisma/setup", "vitest.setup.ts"] // add vitest.setup.ts
+    setupFiles: ["vitest-environment-vprisma/setup", "vitest.setup.ts"], // add vitest.setup.ts
   },
 });
 ```
@@ -134,30 +135,37 @@ export default defineConfig({
     setupFiles: ["vitest-environment-vprisma/setup"],
     environmentOptions: {
       vprisma: {
-        // Selectable a base environment "node" | "jsdom" | "happy-dom" | "edge-runtime" (default: "node") 
+        // Selectable a base environment "node" | "jsdom" | "happy-dom" | "edge-runtime" (default: "node")
         baseEnv: "jsdom",
         // Display the query in the log. (default: false)
         verboseQuery: true,
         // Commit without rolling back the transaction. (default: false)
         disableRollback: true,
         // Override the database connection URL. (default: process.env.DATABASE_URL)
-        databaseUrl: "postgresql://postgres:password@localhost:5432/test?schema=public"
-      }
+        databaseUrl:
+          "postgresql://postgres:password@localhost:5432/test?schema=public",
+        // Maximum wait time for acquiring a transaction in milliseconds. (default: 2000)
+        transactionMaxWait: 10000,
+        // Maximum duration of a transaction in milliseconds. (default: 5000)
+        transactionTimeout: 30000,
+      },
     },
   },
 });
 ```
 
 It is also possible to specify these option values for each test file.  
-Use the format `// @vitest-environment-options { "key": "value" }`. Option values are in JSON format.  
+Use the format `// @vitest-environment-options { "key": "value" }`. Option values are in JSON format.
+
 ```ts
 // example.test.ts
 
-// @vitest-environment-options { "verboseQuery": true }
+// @vitest-environment-options { "verboseQuery": true, "transactionTimeout": 30000 }
 test("Add user", async () => {
   /* ... */
 });
 ```
+
 Note that any `environmentOptions` set in `vitest.config.ts` will be overwritten.
 
 ## Tips
@@ -184,7 +192,7 @@ describe(" ... ", () => {
       },
     });
   });
-  
+
   test(" ... ", () => {
     /* ... */
   });

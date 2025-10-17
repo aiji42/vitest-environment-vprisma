@@ -13,6 +13,8 @@ declare global {
 type Options = {
   vprisma?: JestPrismaEnvironmentOptions & {
     baseEnv?: keyof typeof builtinEnvironments;
+    transactionMaxWait?: number;
+    transactionTimeout?: number;
   };
 };
 
