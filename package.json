@@ -1,47 +1,64 @@
 {
-  "name": "vitest-environment-vprisma",
+  "name": "vitest-prisma",
   "version": "0.0.0-development",
-  "description": "Vitest environment for testing with prisma.",
+  "description": "Isolate every Vitest test in a Prisma transaction and roll it back automatically.",
+  "keywords": [
+    "vitest",
+    "prisma",
+    "testing",
+    "transaction",
+    "rollback",
+    "database"
+  ],
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "./setup": {
-      "import": "./dist/setup.mjs",
-      "require": "./dist/setup.cjs"
-    }
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
   },
-  "main": "./dist/index.cjs",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.mts",
   "files": [
-    "dist"
+    "dist",
+    "docs",
+    "skills"
   ],
-  "repository": "git@github.com:aiji42/vitest-environment-vprisma.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aiji42/vitest-environment-vprisma.git"
+  },
+  "homepage": "https://github.com/aiji42/vitest-environment-vprisma#readme",
+  "bugs": "https://github.com/aiji42/vitest-environment-vprisma/issues",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
-    "build": "unbuild",
-    "prepack": "yarn build",
-    "semantic-release": "semantic-release"
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.build.json",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:package": "publint && attw --pack . --profile esm-only",
+    "prepack": "pnpm build"
   },
   "peerDependencies": {
-    "@prisma/client": "^2.29.0 || ^3.0.0 || ^4.0.0 || ^5.0.0",
-    "vitest": "*"
-  },
-  "dependencies": {
-    "@quramy/jest-prisma-core": "^1.7.2"
+    "vitest": ">=4.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.4",
-    "prettier": "^3.1.0",
-    "semantic-release": "^22.0.10",
-    "typescript": "^5.3.3",
-    "unbuild": "^2.0.0",
-    "vitest": "^1.0.2"
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@biomejs/biome": "^2.6.3",
+    "@types/node": "^22.20.5",
+    "publint": "^0.3.25",
+    "semantic-release": "^25.0.9",
+    "tsdown": "^0.23.2",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   },
   "release": {
+    "tagFormat": "vitest-prisma@${version}",
     "branches": [
       "main",
       {
@@ -49,5 +66,9 @@
         "prerelease": true
       }
     ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

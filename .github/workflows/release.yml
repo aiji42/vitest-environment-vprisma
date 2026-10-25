@@ -1,26 +1,35 @@
 name: Release
 on:
   push:
-    branches:
-      - main
-      - beta
+    branches: [main, beta]
+
+permissions:
+  contents: read
+
 jobs:
   release:
-    name: Release 🚀
+    name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # create tags and GitHub releases
+      issues: write # comment on released issues
+      pull-requests: write # comment on released pull requests
+      id-token: write # npm trusted publishing (OIDC) and provenance
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 'lts/*'
-      - name: Install dependencies
-        run: yarn install
-      - name: Release 🚀
+          node-version-file: .node-version
+          cache: pnpm
+      # Trusted publishing needs npm >= 11.5 (Node 22 bundles npm 10).
+      - run: npm install -g npm@latest
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test
+      # No NPM_TOKEN: publishing is authorized by the trusted publisher configured on npmjs.com.
+      - run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
