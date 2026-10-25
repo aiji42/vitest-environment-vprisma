@@ -148,7 +148,7 @@ Returns a `VPrisma` handle:
 |---|---|
 | `client` | Client bound to the current test's transaction. Usable in `test`, `beforeEach`, `afterEach` and in code they call. Throws [`E_OUTSIDE_TEST`](./docs/errors.md#e_outside_test) elsewhere. It is a stable reference you can store or pass to `vi.mock`. |
 | `originalClient` | The underlying client, outside any transaction. **Not rolled back.** For `beforeAll` / `afterAll`. |
-| `configure(options)` | Override `rollback` / `savepoints` for the current test file. Call it at the top level of the file. |
+| `configure(options)` | Override `rollback` / `savepoints` for the current test file. Call it once at the top level of the file; calling it inside a test throws [`E_CONFIGURE_IN_TEST`](./docs/errors.md#e_configure_in_test). |
 
 ### Options
 
@@ -157,7 +157,7 @@ Returns a `VPrisma` handle:
 | `rollback` | `true` | `false` commits each test's transaction instead. Useful for inspecting data while debugging. |
 | `savepoints` | `true` | Use `SAVEPOINT`s for nested `$transaction` calls and standalone queries. Set `false` for SQL Server / MongoDB. |
 | `transactionOptions.timeout` | `86_400_000` | Max lifetime (ms) of a test transaction. Prisma's 5s default is too short for tests, so in practice Vitest's `testTimeout` is the limit. |
-| `transactionOptions.maxWait` | `10_000` | Max time (ms) to wait for a connection. |
+| `transactionOptions.maxWait` | `5_000` | Max time (ms) to wait for a connection. When set, the `aroundEach` hook timeout becomes `maxWait + 10s`, so it can exceed Vitest's `hookTimeout`. |
 | `transactionOptions.isolationLevel` | DB default | Isolation level of the test transaction. |
 
 ## Recipes

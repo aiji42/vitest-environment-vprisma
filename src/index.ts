@@ -1,4 +1,4 @@
-import { afterAll, aroundEach } from "vitest";
+import { afterAll, aroundEach, expect } from "vitest";
 import { VPrismaError } from "./errors.ts";
 import { createTestClient } from "./test-client.ts";
 import type { FileOptions, PrismaClientLike, VPrisma, VPrismaOptions } from "./types.ts";
@@ -13,10 +13,12 @@ export type {
 } from "./types.ts";
 
 const DEFAULT_TIMEOUT = 86_400_000;
-const DEFAULT_MAX_WAIT = 10_000;
+// Below Vitest's default hookTimeout (10s), so Prisma's pool-timeout error surfaces instead of a
+// hook timeout.
+const DEFAULT_MAX_WAIT = 5_000;
 
 // Properties that tooling (vi.mock, util.inspect, expect, await) probes on arbitrary objects.
-// They must not throw when accessed outside a test.
+// They must not throw when accessed outside a test. Object.prototype members are allowed too.
 const PROBED_PROPS = new Set<PropertyKey>([
   "then",
   "__esModule",
@@ -24,6 +26,8 @@ const PROBED_PROPS = new Set<PropertyKey>([
   "asymmetricMatch",
   "$$typeof",
   "nodeType",
+  "inspect",
+  "_isMockFunction",
 ]);
 
 class RollbackSignal extends Error {}
@@ -35,16 +39,25 @@ class RollbackSignal extends Error {}
  * reference still reaches the current file's transaction.
  */
 interface Slot {
+  /** Client bound to the running test's transaction. */
   current: unknown;
   running: boolean;
+  original: PrismaClientLike | undefined;
+  fileOptions: FileOptions;
 }
 interface WorkerState {
   slots: Slot[];
   next: number;
+  /** Test file whose setup is (or was last) running in this worker. */
+  file: string | undefined;
 }
 const STATE_KEY = Symbol.for("vitest-prisma.state");
 const globals = globalThis as Record<symbol, WorkerState | undefined>;
-const workerState: WorkerState = globals[STATE_KEY] ?? { slots: [], next: 0 };
+const workerState: WorkerState = globals[STATE_KEY] ?? {
+  slots: [],
+  next: 0,
+  file: undefined,
+};
 globals[STATE_KEY] = workerState;
 
 /**
@@ -80,14 +93,10 @@ export function createVPrisma<Client extends PrismaClientLike>(
   options: VPrismaOptions = {},
 ): VPrisma<Client> {
   const { transactionOptions, ...defaultFileOptions } = options;
-  let fileOptions: FileOptions = {};
-  let original: Client | undefined;
-  const slot: Slot = workerState.slots[workerState.next] ?? { current: undefined, running: false };
-  workerState.slots[workerState.next] = slot;
-  workerState.next++;
+  const slot = takeSlot();
 
   const getOriginal = (): Client => {
-    if (original) return original;
+    if (slot.original) return slot.original as Client;
     const client = factory();
     if (typeof client?.$transaction !== "function") {
       throw new VPrismaError(
@@ -95,9 +104,13 @@ export function createVPrisma<Client extends PrismaClientLike>(
         "The factory passed to createVPrisma() must return a PrismaClient instance.",
       );
     }
-    original = client;
+    slot.original = client;
     return client;
   };
+
+  // The connection wait happens in aroundEach's setup phase, which Vitest bounds by hookTimeout.
+  const hookTimeout =
+    transactionOptions?.maxWait === undefined ? undefined : transactionOptions.maxWait + 10_000;
 
   aroundEach(async (runTest) => {
     if (slot.running) {
@@ -110,7 +123,7 @@ export function createVPrisma<Client extends PrismaClientLike>(
     slot.running = true;
     const { rollback = true, savepoints = true } = {
       ...defaultFileOptions,
-      ...fileOptions,
+      ...slot.fileOptions,
     };
     try {
       await getOriginal().$transaction(
@@ -134,20 +147,24 @@ export function createVPrisma<Client extends PrismaClientLike>(
     } finally {
       slot.running = false;
     }
-  });
+  }, hookTimeout);
 
   afterAll(async () => {
     workerState.next = 0;
-    fileOptions = {};
-    const client = original;
-    original = undefined;
+    workerState.file = undefined;
+    slot.fileOptions = {};
+    const client = slot.original;
+    slot.original = undefined;
     await client?.$disconnect();
   });
 
   const client = new Proxy({} as Client, {
     get(_, prop) {
       if (slot.current) return Reflect.get(slot.current, prop);
+      // e.g. `afterAll(() => db.$disconnect())` on a mocked shared client.
+      if (prop === "$connect" || prop === "$disconnect") return async () => {};
       if (typeof prop === "symbol" || PROBED_PROPS.has(prop)) return undefined;
+      if (prop in Object.prototype) return Reflect.get(Object.prototype, prop);
       throw new VPrismaError(
         "E_OUTSIDE_TEST",
         `vPrisma.client.${prop} was accessed outside a test. vPrisma.client is only usable inside ` +
@@ -164,7 +181,42 @@ export function createVPrisma<Client extends PrismaClientLike>(
       return getOriginal();
     },
     configure(options) {
-      fileOptions = { ...fileOptions, ...options };
+      if (slot.running) {
+        throw new VPrismaError(
+          "E_CONFIGURE_IN_TEST",
+          "vPrisma.configure() was called while a test was running. It applies to the whole test " +
+            "file, so call it once at the top level of the file.",
+        );
+      }
+      slot.fileOptions = { ...slot.fileOptions, ...options };
     },
   };
+}
+
+/**
+ * Pick the slot for the next createVPrisma() call. Calls are numbered from 0 within each test
+ * file; the numbering restarts when the file changes, even if the previous file never reached its
+ * afterAll (collection error, skipped file).
+ */
+function takeSlot(): Slot {
+  const file = expect.getState().testPath;
+  if (file !== workerState.file) {
+    workerState.file = file;
+    workerState.next = 0;
+    // Clean up after a file whose afterAll did not run.
+    for (const slot of workerState.slots) {
+      slot.fileOptions = {};
+      void slot.original?.$disconnect().catch(() => {});
+      slot.original = undefined;
+    }
+  }
+  const index = workerState.next++;
+  const slot = workerState.slots[index] ?? {
+    current: undefined,
+    running: false,
+    original: undefined,
+    fileOptions: {},
+  };
+  workerState.slots[index] = slot;
+  return slot;
 }

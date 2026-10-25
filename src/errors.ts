@@ -9,7 +9,9 @@ export type VPrismaErrorCode =
   | "E_CONCURRENT_TEST"
   | "E_UNSUPPORTED_ON_TEST_CLIENT"
   | "E_INVALID_CLIENT"
-  | "E_SAVEPOINT_FAILED";
+  | "E_SAVEPOINT_FAILED"
+  | "E_CONFIGURE_IN_TEST"
+  | "E_INVALID_TRANSACTION_ARGUMENT";
 
 /** Error thrown by vitest-prisma. Check `code` to branch on the cause. */
 export class VPrismaError extends Error {

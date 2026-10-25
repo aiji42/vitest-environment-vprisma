@@ -74,6 +74,24 @@ vitest-prisma uses that instead and this error does not occur.
   closed by Prisma's transaction `timeout`. Raise it with
   `createVPrisma(factory, { transactionOptions: { timeout } })`.
 
+## E_CONFIGURE_IN_TEST
+
+**Cause:** `vPrisma.configure()` was called while a test was running. Its options apply to the
+whole test file and are read when each test starts, so a call inside a test would silently change
+every later test in the file.
+
+**Fix:** call `vPrisma.configure()` once, at the top level of the test file. Calling it inside a
+`describe` callback also affects the whole file. To use different options, put those tests in
+another file.
+
+## E_INVALID_TRANSACTION_ARGUMENT
+
+**Cause:** `vPrisma.client.$transaction()` received something other than a callback or an array of
+Prisma queries.
+
+**Fix:** pass `async (tx) => { ... }` or `[prisma.a.create(...), prisma.b.update(...)]`. Query
+arrays must hold un-awaited Prisma queries.
+
 ## Not a vitest-prisma error, but common
 
 ### `Cannot access 'vPrisma' before initialization` (from `vi.mock`)

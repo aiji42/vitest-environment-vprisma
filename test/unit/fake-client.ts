@@ -2,6 +2,7 @@ type FakeTx = {
   user: {
     create(args: { data: { name: string } }): PromiseLike<{ name: string }>;
     fail(): PromiseLike<never>;
+    eager(): Promise<string>;
   };
   $executeRawUnsafe(sql: string): Promise<number>;
   $transaction?: (fn: () => Promise<unknown>) => Promise<unknown>;
@@ -25,9 +26,10 @@ export function createFakeClient({ nativeNested = false } = {}) {
   let disconnectCount = 0;
 
   // Like PrismaPromise, queries are lazy: they only run when awaited.
-  const lazy = <T>(run: () => Promise<T>): PromiseLike<T> => ({
+  const lazy = <T>(run: () => Promise<T>): PromiseLike<T> & { [Symbol.toStringTag]: string } => ({
     // biome-ignore lint/suspicious/noThenProperty: mimics PrismaPromise
     then: (onFulfilled, onRejected) => run().then(onFulfilled, onRejected),
+    [Symbol.toStringTag]: "PrismaPromise",
   });
   const createTx = (): FakeTx => ({
     user: {
@@ -36,6 +38,11 @@ export function createFakeClient({ nativeNested = false } = {}) {
           events.push(`INSERT ${data.name}`);
           return data;
         }),
+      // Like a $extends model method: an async function that runs as soon as it is called.
+      eager: async () => {
+        events.push("EAGER");
+        return "eager";
+      },
       fail: () =>
         lazy(async () => {
           events.push("QUERY ERROR");

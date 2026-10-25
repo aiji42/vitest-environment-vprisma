@@ -10,7 +10,7 @@ export interface PrismaClientLike {
 
 /** Options accepted by the outer interactive transaction (`PrismaClient.$transaction(fn, options)`). */
 export interface TransactionOptions {
-  /** Max time (ms) to wait for a connection from the pool. @default 10_000 */
+  /** Max time (ms) to wait for a connection from the pool. @default 5_000 */
   maxWait?: number;
   /**
    * Max time (ms) the per-test transaction may stay open.

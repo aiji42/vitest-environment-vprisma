@@ -18,6 +18,12 @@ afterAll(() => {
 
 const vPrisma = createVPrisma(factory, { transactionOptions: { maxWait: 1234 } });
 
+const outside = {
+  disconnect: await vPrisma.client.$disconnect(),
+  toStringType: typeof vPrisma.client.toString,
+  constructorName: vPrisma.client.constructor.name,
+};
+
 beforeAll(() => {
   expect(() => vPrisma.client.user).toThrowError(
     expect.objectContaining({ code: "E_OUTSIDE_TEST" }),
@@ -73,9 +79,36 @@ describe("transaction lifecycle", () => {
 });
 
 describe("outside a test", () => {
+  test("$connect/$disconnect and Object.prototype members do not throw", async () => {
+    const { client } = vPrisma;
+    // Evaluated during collection, i.e. outside any test transaction.
+    expect(outside.disconnect).toBeUndefined();
+    expect(outside.toStringType).toBe("function");
+    expect(outside.constructorName).toBe("Object");
+    expect(client).toBeDefined();
+  });
+
   test("tooling probes do not throw", async () => {
     // Simulates the client being returned from a vi.mock factory or awaited.
     const { client } = vPrisma;
     expect(await Promise.resolve({ client })).toEqual({ client });
+  });
+});
+
+describe("review regressions", () => {
+  test("configure() inside a test throws instead of silently affecting later tests", () => {
+    expect(() => vPrisma.configure({ rollback: false })).toThrowError(/E_CONFIGURE_IN_TEST/);
+  });
+
+  test("$transaction with an invalid argument throws a VPrismaError", () => {
+    expect(() => vPrisma.client.$transaction("nope" as never)).toThrowError(
+      /E_INVALID_TRANSACTION_ARGUMENT/,
+    );
+  });
+
+  test("eager promises (e.g. $extends methods) are returned untouched", async () => {
+    const before = fake.events.length;
+    await expect(vPrisma.client.user.eager()).resolves.toBe("eager");
+    expect(fake.events.slice(before)).toEqual(["EAGER"]);
   });
 });

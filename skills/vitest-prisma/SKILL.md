@@ -54,6 +54,8 @@ Match the code in `[vitest-prisma:E_*]` and apply the fix from `docs/errors.md`:
 | `E_UNSUPPORTED_ON_TEST_CLIENT` | Move `$extends`/`$on`/`$use` into the factory. |
 | `E_INVALID_CLIENT` | Make the factory return the client instance itself. |
 | `E_SAVEPOINT_FAILED` | SQL Server/MongoDB: `savepoints: false`. Otherwise read `error.cause`. |
+| `E_CONFIGURE_IN_TEST` | Move `vPrisma.configure()` to the top level of the file. |
+| `E_INVALID_TRANSACTION_ARGUMENT` | Pass a callback or an array of un-awaited queries. |
 
 Other symptoms:
 

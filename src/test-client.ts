@@ -13,6 +13,8 @@ const RAW_QUERIES = new Set<PropertyKey>([
   "$queryRawUnsafe",
   "$executeRaw",
   "$executeRawUnsafe",
+  "$queryRawTyped",
+  "$runCommandRaw",
 ]);
 
 /**
@@ -70,14 +72,19 @@ export function createTestClient<Client>(tx: TxClient, savepoints: boolean): Cli
         return results;
       };
     } else {
-      throw new TypeError("$transaction expects a callback or an array of Prisma queries");
+      throw new VPrismaError(
+        "E_INVALID_TRANSACTION_ARGUMENT",
+        "vPrisma.client.$transaction() expects a callback or an array of Prisma queries " +
+          `but received ${arg === null ? "null" : typeof arg}.`,
+      );
     }
     return serialize(() => withSavepoint(() => insideNested.run(true, body)));
   };
 
   // Defer a lazy PrismaPromise until it is awaited, then run it in its own SAVEPOINT.
   const wrapQuery = (query: unknown): unknown => {
-    if (!savepoints || !isThenable(query)) return query;
+    // Only lazy PrismaPromises: an eager promise (e.g. from a $extends method) has already started.
+    if (!savepoints || !isPrismaPromise(query)) return query;
     let result: Promise<unknown> | undefined;
     const run = () => {
       // Inside a nested transaction a failing query fails that transaction, as it would for real.
@@ -145,8 +152,9 @@ type Fn = (...args: any[]) => any;
 const isObject = (value: unknown): value is object =>
   (typeof value === "object" || typeof value === "function") && value !== null;
 
-const isThenable = (value: unknown): value is PromiseLike<unknown> =>
-  isObject(value) && typeof (value as { then?: unknown }).then === "function";
+const isPrismaPromise = (value: unknown): value is PromiseLike<unknown> =>
+  isObject(value) &&
+  (value as { [Symbol.toStringTag]?: unknown })[Symbol.toStringTag] === "PrismaPromise";
 
 async function execSavepoint(tx: TxClient, sql: string): Promise<void> {
   try {
