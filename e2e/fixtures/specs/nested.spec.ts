@@ -32,3 +32,11 @@ test("a database error inside a nested transaction does not break the test trans
   ).rejects.toThrow();
   expect(await prisma.user.count()).toBe(1);
 });
+
+test("fluent relation queries", async () => {
+  const user = await prisma.user.create({
+    data: { email: "f@example.com", name: "f", posts: { create: [{ title: "hello" }] } },
+  });
+  const posts = await prisma.user.findUnique({ where: { id: user.id } }).posts();
+  expect(posts?.map((p) => p.title)).toEqual(["hello"]);
+});
