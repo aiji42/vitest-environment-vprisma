@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [main, beta]
+    branches: [main, beta, "v[0-9]*"]
   pull_request:
 
 permissions:
@@ -28,6 +28,8 @@ jobs:
       - run: pnpm test
       - run: pnpm build
       - run: pnpm check:package
+      - name: Example (SQLite, no services needed)
+        run: pnpm --filter ./examples/sqlite test
 
   e2e:
     name: e2e (${{ matrix.db }}, prisma ${{ matrix.prisma }}, vitest ${{ matrix.vitest }})
