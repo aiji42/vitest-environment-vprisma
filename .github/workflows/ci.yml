@@ -1,0 +1,76 @@
+name: CI
+on:
+  push:
+    branches: [main, beta]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck, unit test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - run: pnpm check:package
+
+  e2e:
+    name: e2e (${{ matrix.db }}, prisma ${{ matrix.prisma }}, vitest ${{ matrix.vitest }})
+    runs-on: ubuntu-latest
+    # Prisma's next major is tracked to catch breakage early, but does not block merges.
+    continue-on-error: ${{ matrix.prisma == 'next' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        db: [sqlite, postgresql, mysql]
+        prisma: ["6", "7", "next"]
+        vitest: ["5"]
+        include:
+          - { db: sqlite, prisma: "7", vitest: "4.1" }
+          - { db: postgresql, prisma: "7", vitest: "4.1" }
+          - { db: mysql, prisma: "7", vitest: "4.1" }
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: vprisma_e2e
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: vprisma_e2e
+        ports: ["3306:3306"]
+        options: --health-cmd "mysqladmin ping -ppassword" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      E2E_DB: ${{ matrix.db }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: e2e/scripts/use-versions.sh ${{ matrix.prisma }} ${{ matrix.vitest }}
+      - run: pnpm build
+      - run: pnpm --filter ./e2e generate
+      - run: pnpm --filter ./e2e db:push
+      - run: pnpm --filter ./e2e test
