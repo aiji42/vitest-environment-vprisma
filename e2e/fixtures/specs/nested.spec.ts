@@ -6,37 +6,37 @@ const prisma = vPrisma.client;
 
 test("array-form $transaction", async () => {
   const [a, b] = await prisma.$transaction([
-    prisma.user.create({ data: { email: "a@example.com", name: "a" } }),
-    prisma.user.create({ data: { email: "b@example.com", name: "b" } }),
+    prisma.user.create({ data: { email: "a@nested.test", name: "a" } }),
+    prisma.user.create({ data: { email: "b@nested.test", name: "b" } }),
   ]);
-  expect([a.email, b.email]).toEqual(["a@example.com", "b@example.com"]);
+  expect([a.email, b.email]).toEqual(["a@nested.test", "b@nested.test"]);
   expect(await prisma.user.count()).toBe(2);
 });
 
 test("a failed nested transaction keeps the outer writes", async () => {
-  await prisma.user.create({ data: { email: "outer@example.com", name: "o" } });
+  await prisma.user.create({ data: { email: "outer@nested.test", name: "o" } });
   await expect(
     prisma.$transaction(async (tx) => {
-      await tx.user.create({ data: { email: "inner@example.com", name: "i" } });
+      await tx.user.create({ data: { email: "inner@nested.test", name: "i" } });
       throw new Error("abort inner");
     }),
   ).rejects.toThrow("abort inner");
   expect(await prisma.user.findMany({ select: { email: true } })).toEqual([
-    { email: "outer@example.com" },
+    { email: "outer@nested.test" },
   ]);
 });
 
 test("a database error inside a nested transaction does not break the test transaction", async () => {
-  await prisma.user.create({ data: { email: "dup@example.com", name: "d" } });
+  await prisma.user.create({ data: { email: "dup@nested.test", name: "d" } });
   await expect(
-    prisma.$transaction((tx) => tx.user.create({ data: { email: "dup@example.com", name: "d" } })),
+    prisma.$transaction((tx) => tx.user.create({ data: { email: "dup@nested.test", name: "d" } })),
   ).rejects.toThrow();
   expect(await prisma.user.count()).toBe(1);
 });
 
 test("fluent relation queries", async () => {
   const user = await prisma.user.create({
-    data: { email: "f@example.com", name: "f", posts: { create: [{ title: "hello" }] } },
+    data: { email: "f@nested.test", name: "f", posts: { create: [{ title: "hello" }] } },
   });
   const posts = await prisma.user.findUnique({ where: { id: user.id } }).posts();
   expect(posts?.map((p) => p.title)).toEqual(["hello"]);
@@ -44,9 +44,9 @@ test("fluent relation queries", async () => {
 
 test("a failing transaction nested inside another one rolls back only itself", async () => {
   await prisma.$transaction(async () => {
-    await createUser("x@example.com");
-    await expect(createPair("y@example.com", "x@example.com")).rejects.toThrow();
-    await createUser("z@example.com");
+    await createUser("x@nested.test");
+    await expect(createPair("y@nested.test", "x@nested.test")).rejects.toThrow();
+    await createUser("z@nested.test");
   });
   expect(await prisma.user.count()).toBe(2);
 });

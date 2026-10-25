@@ -62,3 +62,5 @@ Other symptoms:
 - Data leaks between tests: the code under test creates its own `PrismaClient` instead of using the
   mocked shared module. Mock that module too, or refactor it to use the shared client.
 - `SQLITE_BUSY` / `database is locked`: set `fileParallelism: false`.
+- Deadlocks or lock waits between test files: parallel files insert the same unique values. Make
+  test data unique per file or test (for example, a random suffix).

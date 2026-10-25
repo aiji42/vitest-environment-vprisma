@@ -8,7 +8,7 @@ afterAll(async () => {
 });
 
 test("writes are committed", async () => {
-  await vPrisma.client.user.create({ data: { email: "commit-1@example.com", name: "c" } });
+  await vPrisma.client.user.create({ data: { email: "commit-1@commit.test", name: "c" } });
 });
 
 test("and visible in the next test", async () => {

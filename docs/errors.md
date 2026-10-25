@@ -88,6 +88,12 @@ not mocked, and mock only the module that holds the shared instance. See
 The test ran longer than `transactionOptions.timeout`, which defaults to 24 hours. You may have
 lowered it, or the test leaked a query past its own end. Await every query, or raise the timeout.
 
+### `Transaction failed due to a write conflict or a deadlock` / lock wait timeouts
+
+Two test files running in parallel inserted the same unique value. Each holds its row lock
+until its transaction rolls back, so they block each other. Make test data unique per file or per
+test, or set `fileParallelism: false`.
+
 ### SQLite: `database is locked` / `SQLITE_BUSY`
 
 SQLite allows only one writer at a time, and every test holds a write transaction. Set

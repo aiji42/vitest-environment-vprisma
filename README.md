@@ -193,6 +193,13 @@ Every test in a file covered by the setup file opens a transaction. To keep pure
 of database access, put them in a separate [Vitest project](https://vitest.dev/guide/projects)
 that does not include the setup file.
 
+### Parallel test files and unique values
+
+Test files run in parallel, each in its own transaction. If two files insert the same unique
+value (for example the same email), the second insert waits for the first transaction's lock, and
+MySQL may abort one with a deadlock error. Use values unique to each file or test (for example,
+include a random suffix), or run files sequentially with `fileParallelism: false`.
+
 ### SQLite
 
 SQLite allows one writer at a time. Set `fileParallelism: false` or give each worker its own
