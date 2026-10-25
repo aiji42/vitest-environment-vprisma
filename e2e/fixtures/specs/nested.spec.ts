@@ -1,4 +1,5 @@
 import { expect, test } from "vitest";
+import { createPair, createUser } from "../app/users.ts";
 import { vPrisma } from "../setup.ts";
 
 const prisma = vPrisma.client;
@@ -39,4 +40,13 @@ test("fluent relation queries", async () => {
   });
   const posts = await prisma.user.findUnique({ where: { id: user.id } }).posts();
   expect(posts?.map((p) => p.title)).toEqual(["hello"]);
+});
+
+test("a failing transaction nested inside another one rolls back only itself", async () => {
+  await prisma.$transaction(async () => {
+    await createUser("x@example.com");
+    await expect(createPair("y@example.com", "x@example.com")).rejects.toThrow();
+    await createUser("z@example.com");
+  });
+  expect(await prisma.user.count()).toBe(2);
 });

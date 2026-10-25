@@ -124,6 +124,11 @@ Inside the transaction, `vPrisma.client` behaves like a normal client:
   Without this, PostgreSQL fails every later query with "current transaction is aborted".
 - `$connect()` / `$disconnect()` are no-ops.
 
+Savepoints go through Prisma's native nested transactions when the transaction client supports
+them (recent Prisma 7+). Otherwise vitest-prisma issues `SAVEPOINT` statements itself.
+
+It works with every Vitest pool (`forks`, `threads`) and with `isolate: false`.
+
 The client is created lazily on first use in each test file and disconnected after the file finishes.
 
 ## API

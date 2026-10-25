@@ -4,6 +4,7 @@ type FakeTx = {
     fail(): PromiseLike<never>;
   };
   $executeRawUnsafe(sql: string): Promise<number>;
+  $transaction?: (fn: () => Promise<unknown>) => Promise<unknown>;
 };
 
 // Mirrors the two PrismaClient.$transaction overloads.
@@ -18,7 +19,7 @@ type FakeTransaction = {
  * A stand-in for PrismaClient that records transaction boundaries and SQL instead of talking to a DB.
  * Plain counters are used instead of vi.fn() because Vitest clears mocks between tests by default.
  */
-export function createFakeClient() {
+export function createFakeClient({ nativeNested = false } = {}) {
   const events: string[] = [];
   const transactionOptions: unknown[] = [];
   let disconnectCount = 0;
@@ -45,6 +46,20 @@ export function createFakeClient() {
       events.push(sql);
       return 0;
     },
+    // Recent Prisma 7 transaction clients support nested transactions natively.
+    ...(nativeNested && {
+      $transaction: async (fn: () => Promise<unknown>) => {
+        events.push("NESTED BEGIN");
+        try {
+          const result = await fn();
+          events.push("NESTED COMMIT");
+          return result;
+        } catch (error) {
+          events.push("NESTED ROLLBACK");
+          throw error;
+        }
+      },
+    }),
   });
 
   return {

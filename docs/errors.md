@@ -59,8 +59,14 @@ return a promise, a module or a model delegate.
 vitest-prisma uses savepoints for nested `$transaction` calls and to isolate each standalone query.
 The original database error is attached as `error.cause`.
 
+When the transaction client supports nested `$transaction` natively (recent Prisma 7+),
+vitest-prisma uses that instead and this error does not occur.
+
 **Fix:**
 
+- On MySQL with a Prisma 7 release whose transaction client lacks native nested transactions, the
+  cause reads "This command is not supported in the prepared statement protocol". Upgrade Prisma.
+  If you can't, use `savepoints: false`.
 - On SQL Server or MongoDB, which have no standard `SAVEPOINT` syntax, disable savepoints:
   `createVPrisma(factory, { savepoints: false })`. A failed nested transaction then cannot be
   rolled back on its own.

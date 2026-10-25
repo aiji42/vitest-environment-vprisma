@@ -29,6 +29,25 @@ const PROBED_PROPS = new Set<PropertyKey>([
 class RollbackSignal extends Error {}
 
 /**
+ * Per-worker state shared by every createVPrisma() call. With `isolate: false`, the setup file is
+ * re-run for each test file while application modules (and the vPrisma.client they captured in
+ * vi.mock) stay cached. Instances are matched to slots by call order within a file, so a stale
+ * reference still reaches the current file's transaction.
+ */
+interface Slot {
+  current: unknown;
+  running: boolean;
+}
+interface WorkerState {
+  slots: Slot[];
+  next: number;
+}
+const STATE_KEY = Symbol.for("vitest-prisma.state");
+const workerState: WorkerState = ((globalThis as Record<symbol, WorkerState | undefined>)[
+  STATE_KEY
+] ??= { slots: [], next: 0 });
+
+/**
  * Wrap every test of the current test file in a Prisma transaction that is rolled back when the
  * test finishes. Call it from a Vitest `setupFiles` module and export the result.
  *
@@ -63,8 +82,11 @@ export function createVPrisma<Client extends PrismaClientLike>(
   const { transactionOptions, ...defaultFileOptions } = options;
   let fileOptions: FileOptions = {};
   let original: Client | undefined;
-  let running = false;
-  let current: Client | undefined;
+  const slot: Slot = (workerState.slots[workerState.next] ??= {
+    current: undefined,
+    running: false,
+  });
+  workerState.next++;
 
   const getOriginal = (): Client => {
     if (original) return original;
@@ -80,14 +102,14 @@ export function createVPrisma<Client extends PrismaClientLike>(
   };
 
   aroundEach(async (runTest) => {
-    if (running) {
+    if (slot.running) {
       throw new VPrismaError(
         "E_CONCURRENT_TEST",
         "Tests in the same file cannot run concurrently with vitest-prisma because they would share " +
           "one transaction. Remove `.concurrent` / `sequence.concurrent` for files that use vPrisma.",
       );
     }
-    running = true;
+    slot.running = true;
     const { rollback = true, savepoints = true } = {
       ...defaultFileOptions,
       ...fileOptions,
@@ -95,11 +117,11 @@ export function createVPrisma<Client extends PrismaClientLike>(
     try {
       await getOriginal().$transaction(
         async (tx: Parameters<typeof createTestClient>[0]) => {
-          current = createTestClient<Client>(tx, savepoints);
+          slot.current = createTestClient<Client>(tx, savepoints);
           try {
             await runTest();
           } finally {
-            current = undefined;
+            slot.current = undefined;
           }
           if (rollback) throw new RollbackSignal();
         },
@@ -112,11 +134,12 @@ export function createVPrisma<Client extends PrismaClientLike>(
     } catch (error) {
       if (!(error instanceof RollbackSignal)) throw error;
     } finally {
-      running = false;
+      slot.running = false;
     }
   });
 
   afterAll(async () => {
+    workerState.next = 0;
     fileOptions = {};
     const client = original;
     original = undefined;
@@ -125,7 +148,7 @@ export function createVPrisma<Client extends PrismaClientLike>(
 
   const client = new Proxy({} as Client, {
     get(_, prop) {
-      if (current) return Reflect.get(current, prop);
+      if (slot.current) return Reflect.get(slot.current, prop);
       if (typeof prop === "symbol" || PROBED_PROPS.has(prop)) return undefined;
       throw new VPrismaError(
         "E_OUTSIDE_TEST",

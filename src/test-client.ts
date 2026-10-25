@@ -3,6 +3,8 @@ import { VPrismaError } from "./errors.ts";
 
 type TxClient = {
   $executeRawUnsafe(query: string): PromiseLike<unknown>;
+  /** Native nested transactions (savepoints through the driver adapter), in recent Prisma 7+. */
+  $transaction?: (fn: () => Promise<unknown>) => Promise<unknown>;
 };
 
 const UNSUPPORTED = new Set<PropertyKey>(["$on", "$use", "$extends"]);
@@ -37,8 +39,13 @@ export function createTestClient<Client>(tx: TxClient, savepoints: boolean): Cli
     return run;
   };
 
+  // Prefer Prisma's own nested transactions: the driver adapter issues SAVEPOINT with the right
+  // protocol (MySQL rejects SAVEPOINT as a prepared statement, which $executeRawUnsafe uses).
+  const nativeNested = typeof tx.$transaction === "function" ? tx.$transaction.bind(tx) : undefined;
+
   const withSavepoint = async <T>(fn: () => PromiseLike<T>): Promise<T> => {
     if (!savepoints) return fn();
+    if (nativeNested) return nativeNested(async () => await fn()) as Promise<T>;
     const name = `vprisma_sp_${++savepointSeq}`;
     await execSavepoint(tx, `SAVEPOINT ${name}`);
     let result: T;
@@ -145,9 +152,10 @@ async function execSavepoint(tx: TxClient, sql: string): Promise<void> {
   try {
     await tx.$executeRawUnsafe(sql);
   } catch (cause) {
+    const reason = cause instanceof Error ? cause.message.trim().split("\n").at(-1) : String(cause);
     throw new VPrismaError(
       "E_SAVEPOINT_FAILED",
-      `Failed to run \`${sql}\`. ` +
+      `Failed to run \`${sql}\`: ${reason}. ` +
         "If your database does not support standard SAVEPOINT syntax (e.g. SQL Server, MongoDB), " +
         "use createVPrisma(factory, { savepoints: false }).",
       { cause },
