@@ -12,7 +12,7 @@ vitest="^$2"
 
 pnpm add -D "prisma@$prisma" "@prisma/client@$prisma" "@prisma/adapter-pg@$prisma" \
   "@prisma/adapter-mariadb@$prisma" "@prisma/adapter-better-sqlite3@$prisma" "vitest@$vitest"
-pnpm --dir .. add -D "vitest@$vitest"
+pnpm --dir .. add -D -w "vitest@$vitest"
 
 # Prisma 6 still requires the connection URL in the schema; Prisma 7+ reads it from prisma.config.ts.
 if [ "$1" = "6" ]; then
