@@ -43,9 +43,9 @@ interface WorkerState {
   next: number;
 }
 const STATE_KEY = Symbol.for("vitest-prisma.state");
-const workerState: WorkerState = ((globalThis as Record<symbol, WorkerState | undefined>)[
-  STATE_KEY
-] ??= { slots: [], next: 0 });
+const globals = globalThis as Record<symbol, WorkerState | undefined>;
+const workerState: WorkerState = globals[STATE_KEY] ?? { slots: [], next: 0 };
+globals[STATE_KEY] = workerState;
 
 /**
  * Wrap every test of the current test file in a Prisma transaction that is rolled back when the
@@ -82,10 +82,8 @@ export function createVPrisma<Client extends PrismaClientLike>(
   const { transactionOptions, ...defaultFileOptions } = options;
   let fileOptions: FileOptions = {};
   let original: Client | undefined;
-  const slot: Slot = (workerState.slots[workerState.next] ??= {
-    current: undefined,
-    running: false,
-  });
+  const slot: Slot = workerState.slots[workerState.next] ?? { current: undefined, running: false };
+  workerState.slots[workerState.next] = slot;
   workerState.next++;
 
   const getOriginal = (): Client => {
