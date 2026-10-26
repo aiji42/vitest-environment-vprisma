@@ -79,7 +79,7 @@
       [
         "@semantic-release/exec",
         {
-          "publishCmd": "npm stage publish --access public --tag ${nextRelease.channel || 'latest'}"
+          "publishCmd": "npm --version && npm stage publish --access public --tag ${nextRelease.channel || 'latest'} --loglevel verbose"
         }
       ],
       "@semantic-release/github"
