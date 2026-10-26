@@ -52,7 +52,10 @@ const pools = [{ pool: "forks" }, { pool: "threads" }, { pool: "forks", isolate:
 
 describe.each(pools)(`${database.provider}: %o`, (config) => {
   test("each test ends as expected", async () => {
-    const outcomes = await runFixtures(["rollback", "singleton", "nested", "query-error"], config);
+    const outcomes = await runFixtures(
+      ["rollback", "singleton", "nested", "query-error", "extended"],
+      config,
+    );
     expect(outcomes.length).toBeGreaterThan(0);
     const unexpected = outcomes.filter(
       (o) => o.state !== (o.name.includes("[fail]") ? "failed" : "passed"),
