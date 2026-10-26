@@ -1,0 +1,18 @@
+{
+  "name": "@vitest-prisma/example-sqlite",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pretest": "prisma generate && prisma db push",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.10.1",
+    "@prisma/client": "^7.10.1"
+  },
+  "devDependencies": {
+    "prisma": "^7.10.1",
+    "vitest": "^5.0.5",
+    "vitest-prisma": "workspace:*"
+  }
+}

@@ -1,0 +1,10 @@
+packages:
+  - "."
+  - "e2e"
+  - "examples/*"
+allowBuilds:
+  better-sqlite3: true
+  prisma: true
+  "@prisma/engines": true
+  # Prisma 6 tries to generate on install; the e2e suite generates explicitly instead.
+  "@prisma/client": false

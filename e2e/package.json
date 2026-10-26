@@ -1,0 +1,22 @@
+{
+  "name": "@vitest-prisma/e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "E2E_DB=postgresql prisma generate && E2E_DB=mysql prisma generate && E2E_DB=sqlite prisma generate",
+    "db:push": "prisma db push",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "vitest-prisma": "workspace:*"
+  },
+  "devDependencies": {
+    "@prisma/adapter-better-sqlite3": "7.10.1",
+    "@prisma/adapter-mariadb": "7.10.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "@types/node": "^22.20.5",
+    "prisma": "7.10.1",
+    "vitest": "^5.0.5"
+  }
+}

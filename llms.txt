@@ -1,0 +1,19 @@
+# vitest-prisma
+
+> Vitest helper that runs every test in a Prisma transaction and rolls it back. Requires Vitest >= 4.1, Prisma >= 6, Node >= 22.12. Formerly vitest-environment-vprisma.
+
+The npm package ships the same documents under `node_modules/vitest-prisma/`.
+
+## Docs
+
+- [README](https://github.com/aiji42/vitest-prisma/blob/main/README.md): quick start, mocking a shared client, how it works, API, options, recipes, limitations
+- [Error reference](https://github.com/aiji42/vitest-prisma/blob/main/docs/errors.md): every `[vitest-prisma:E_*]` code with cause and fix
+- [Migration from vitest-environment-vprisma](https://github.com/aiji42/vitest-prisma/blob/main/docs/migration-from-vitest-environment-vprisma.md)
+
+## Agent skill
+
+- [SKILL.md](https://github.com/aiji42/vitest-prisma/blob/main/skills/vitest-prisma/SKILL.md): setup, test-writing rules and failure diagnosis
+
+## Example
+
+- [examples/sqlite](https://github.com/aiji42/vitest-prisma/tree/main/examples/sqlite): runnable with no database server
