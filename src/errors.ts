@@ -1,4 +1,4 @@
-const DOCS_URL = "https://github.com/aiji42/vitest-environment-vprisma/blob/main/docs/errors.md";
+const DOCS_URL = "https://github.com/aiji42/vitest-prisma/blob/main/docs/errors.md";
 
 /**
  * Stable identifiers for every error thrown by vitest-prisma.

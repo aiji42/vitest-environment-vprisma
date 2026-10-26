@@ -1,4 +1,4 @@
-[![CI](https://github.com/aiji42/vitest-environment-vprisma/actions/workflows/ci.yml/badge.svg)](https://github.com/aiji42/vitest-environment-vprisma/actions/workflows/ci.yml)
+[![CI](https://github.com/aiji42/vitest-prisma/actions/workflows/ci.yml/badge.svg)](https://github.com/aiji42/vitest-prisma/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/vitest-prisma.svg)](https://www.npmjs.com/package/vitest-prisma)
 
 # vitest-prisma

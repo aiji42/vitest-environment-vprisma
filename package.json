@@ -23,10 +23,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aiji42/vitest-environment-vprisma.git"
+    "url": "git+https://github.com/aiji42/vitest-prisma.git"
   },
-  "homepage": "https://github.com/aiji42/vitest-environment-vprisma#readme",
-  "bugs": "https://github.com/aiji42/vitest-environment-vprisma/issues",
+  "homepage": "https://github.com/aiji42/vitest-prisma#readme",
+  "bugs": "https://github.com/aiji42/vitest-prisma/issues",
   "author": "aiji42 <aiji42@gmail.com> (https://twitter.com/aiji42_dev)",
   "license": "MIT",
   "packageManager": "pnpm@12.15.0",
