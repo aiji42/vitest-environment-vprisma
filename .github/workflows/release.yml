@@ -31,14 +31,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm test
-      # One-off: remove the tag and notes left by failed attempts at 1.0.0-beta.1, which was never
-      # published. Remove this step once 1.0.0-beta.1 is released.
-      - name: Clean up refs from failed 1.0.0-beta.1 attempts
-        run: |
-          for ref in refs/tags/vitest-prisma@1.0.0-beta.1 refs/notes/semantic-release-vitest-prisma@1.0.0-beta.1; do
-            if git ls-remote --exit-code origin "$ref" > /dev/null; then git push origin ":$ref"; fi
-            git update-ref -d "$ref" || true
-          done
       # No NPM_TOKEN: the trusted publisher on npmjs.com authorizes `npm stage publish` only.
       # The staged version goes live after a maintainer approves it on npmjs.com (Staged Packages).
       - run: pnpm exec semantic-release
