@@ -30,6 +30,8 @@ jobs:
       - run: pnpm check:package
       - name: Example (SQLite, no services needed)
         run: pnpm --filter ./examples/sqlite test
+      - name: Example (prisma-fabbrica)
+        run: pnpm --filter ./examples/prisma-fabbrica test
 
   e2e:
     name: e2e (${{ matrix.db }}, prisma ${{ matrix.prisma }}, vitest ${{ matrix.vitest }})

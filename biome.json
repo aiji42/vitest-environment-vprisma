@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**/*.ts", "**/*.json", "!**/generated", "!**/dist"]
+    "includes": ["**/*.ts", "**/*.json", "!**/generated", "!**/dist", "!**/__generated__"]
   },
   "formatter": {
     "indentStyle": "space",

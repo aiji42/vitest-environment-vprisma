@@ -198,6 +198,41 @@ only in DB-heavy files that never expect query errors:
 vPrisma.configure({ savepoints: false });
 ```
 
+### Client extensions (`$extends`)
+
+Return the extended client from the factory. Model, query and result extensions all apply to
+`vPrisma.client`, including inside nested `$transaction` calls:
+
+```ts
+export const vPrisma = createVPrisma(() => createClient().$extends(myExtension));
+```
+
+If application code obtains the client through a function such as `getPrismaClient()`, mock that
+function: `vi.mock("./src/db", () => ({ getPrismaClient: () => vPrisma.client }))`.
+
+### prisma-fabbrica
+
+Point [prisma-fabbrica](https://github.com/Quramy/prisma-fabbrica) at `vPrisma.client` once in the
+setup file. Factories then write into the running test's transaction, and everything they create
+is rolled back:
+
+```ts
+// vitest.setup.ts
+import { initialize } from "./src/__generated__/fabbrica";
+
+export const vPrisma = createVPrisma(createClient);
+initialize({ prisma: vPrisma.client });
+```
+
+Notes, as of prisma-fabbrica 2.3.3:
+
+- It imports the client from `@prisma/client`, so use the `prisma-client-js` generator.
+- Its peer dependencies stop at Prisma 6. It works with Prisma 7, but npm needs
+  `--legacy-peer-deps` (pnpm only warns).
+- Its generator needs TypeScript 5. TypeScript 7 has no JavaScript API.
+
+A runnable setup is in [`examples/prisma-fabbrica`](./examples/prisma-fabbrica).
+
 ### Log SQL
 
 Configure logging in the factory: `new PrismaClient({ adapter, log: ["query"] })`.
