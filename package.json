@@ -82,7 +82,12 @@
           "publishCmd": "npm --version && npm stage publish --access public --tag ${nextRelease.channel || 'latest'} --loglevel verbose"
         }
       ],
-      "@semantic-release/github"
+      [
+        "@semantic-release/github",
+        {
+          "successCommentCondition": "<% if (issue.number >= 10) { %>true<% } %>"
+        }
+      ]
     ]
   },
   "publishConfig": {
