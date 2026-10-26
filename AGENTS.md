@@ -11,7 +11,7 @@ package is ESM-only and built from `src/` with tsdown.
 - `test/unit/`: unit tests against a fake client (`test/unit/fake-client.ts`). No database needed.
 - `e2e/`: real-database tests. `e2e/run.test.ts` runs `e2e/fixtures/` through Vitest's Node API
   and checks each test's outcome. Fixture tests named `[fail] ...` must fail; all others must pass.
-- `examples/sqlite/`: user-facing example; also run in CI.
+- `examples/sqlite/`, `examples/prisma-fabbrica/`: user-facing examples; also run in CI.
 - `docs/`, `skills/`, `README.md`: shipped in the npm package; keep them in sync with the code.
 
 ## Commands
@@ -32,6 +32,7 @@ E2E_DB=sqlite pnpm --filter ./e2e test
 e2e/scripts/use-versions.sh <6|7|next> <4.1|5>
 
 pnpm --filter ./examples/sqlite test
+pnpm --filter ./examples/prisma-fabbrica test
 ```
 
 PostgreSQL/MySQL URLs default to `postgres:password@localhost:5432/vprisma_e2e` and

@@ -1,0 +1,28 @@
+// prisma-fabbrica imports the client from @prisma/client, so this example uses the
+// prisma-client-js generator.
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator fabbrica {
+  provider = "prisma-fabbrica"
+  output   = "../src/__generated__/fabbrica"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+  name  String
+  posts Post[]
+}
+
+model Post {
+  id       Int    @id @default(autoincrement())
+  title    String
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId Int
+}

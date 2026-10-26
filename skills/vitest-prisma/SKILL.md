@@ -31,6 +31,8 @@ rolls it back. Full docs: `node_modules/vitest-prisma/README.md`, error referenc
 4. Make sure the test database has the schema (`prisma migrate deploy` or `prisma db push` in
    `globalSetup` or CI). vitest-prisma does not migrate.
 5. SQLite: set `fileParallelism: false`.
+   prisma-fabbrica: call `initialize({ prisma: vPrisma.client })` in the setup file
+   (needs the `prisma-client-js` generator and TypeScript 5; see README "prisma-fabbrica").
 6. Verify: write one test that creates a row and one that expects the table to be empty, then run them.
 
 ## Write tests
