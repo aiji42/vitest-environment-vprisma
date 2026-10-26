@@ -10,6 +10,8 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    # Must match the environment configured for the trusted publisher on npmjs.com.
+    environment: npm
     permissions:
       contents: write # create tags and GitHub releases
       issues: write # comment on released issues
@@ -24,12 +26,13 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
-      # Trusted publishing needs npm >= 11.5 (Node 22 bundles npm 10).
+      # Trusted publishing and `npm stage publish` need npm >= 11.15 (Node 22 bundles npm 10).
       - run: npm install -g npm@latest
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm test
-      # No NPM_TOKEN: publishing is authorized by the trusted publisher configured on npmjs.com.
+      # No NPM_TOKEN: the trusted publisher on npmjs.com authorizes `npm stage publish` only.
+      # The staged version goes live after a maintainer approves it on npmjs.com (Staged Packages).
       - run: pnpm exec semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

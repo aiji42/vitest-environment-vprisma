@@ -40,7 +40,9 @@ PostgreSQL/MySQL URLs default to `postgres:password@localhost:5432/vprisma_e2e` 
 ## Rules
 
 - Commit messages follow Conventional Commits. semantic-release derives versions from them
-  (tags: `vitest-prisma@x.y.z`).
+  (tags: `vitest-prisma@x.y.z`). Releases run from `main` (latest) and `beta` (prerelease) via
+  `.github/workflows/release.yml`. They are *staged* on npm (`npm stage publish` through trusted
+  publishing) and go live only after a maintainer approves them on npmjs.com.
 - A user-visible behavior change needs updates to README.md, `skills/vitest-prisma/SKILL.md` and,
   for new errors, `docs/errors.md`.
 - New error messages: `[vitest-prisma:E_CODE] <what happened>. <how to fix>`, through `VPrismaError`.
