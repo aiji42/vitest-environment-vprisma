@@ -155,7 +155,7 @@ Returns a `VPrisma` handle:
 | Option | Default | Description |
 |---|---|---|
 | `rollback` | `true` | `false` commits each test's transaction instead. Useful for inspecting data while debugging. |
-| `savepoints` | `true` | Use `SAVEPOINT`s for nested `$transaction` calls and standalone queries. Set `false` for SQL Server / MongoDB. |
+| `savepoints` | `true` | Use `SAVEPOINT`s for nested `$transaction` calls and standalone queries. Set `false` for SQL Server / MongoDB, or to [trade safety for speed](#speed-vs-savepoints). |
 | `transactionOptions.timeout` | `86_400_000` | Max lifetime (ms) of a test transaction. Prisma's 5s default is too short for tests, so in practice Vitest's `testTimeout` is the limit. |
 | `transactionOptions.maxWait` | `5_000` | Max time (ms) to wait for a connection. When set, the `aroundEach` hook timeout becomes `maxWait + 10s`, so it can exceed Vitest's `hookTimeout`. |
 | `transactionOptions.isolationLevel` | DB default | Isolation level of the test transaction. |
@@ -181,6 +181,21 @@ For per-test data, use `beforeEach` with `vPrisma.client`. It is rolled back aut
 
 ```ts
 vPrisma.configure({ rollback: false }); // this file only
+```
+
+### Speed vs. savepoints
+
+With `savepoints: true` (the default), each standalone query costs three round trips
+(`SAVEPOINT`, the query, `RELEASE`). On a local PostgreSQL, 1,000 queries took about 550 ms with
+savepoints versus 300 ms without. Over a network the gap grows with latency.
+
+`savepoints: false` gives v1-like speed. The cost is that on PostgreSQL a failing query (for
+example, a unique-constraint violation you assert with `rejects`) aborts the rest of that test,
+and a failing nested `$transaction` no longer rolls back on its own. You can turn savepoints off
+only in DB-heavy files that never expect query errors:
+
+```ts
+vPrisma.configure({ savepoints: false });
 ```
 
 ### Log SQL

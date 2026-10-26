@@ -77,6 +77,9 @@ transaction is driven by Vitest's `aroundEach` hook.
   runs in its own savepoint.
 - **Nested `$transaction` calls roll back on their own when they fail.** v1 needed an experimental
   flag for this.
+- **Standalone queries are slower.** Each one runs in a savepoint, which takes about 1.8× as long
+  on a local PostgreSQL. Use `savepoints: false` (globally or per file) for v1-like speed. See
+  [Speed vs. savepoints](../README.md#speed-vs-savepoints).
 - **Concurrent tests in one file now fail fast** with `E_CONCURRENT_TEST`. In v1 they silently
   shared a transaction.
 - **The client is disconnected after each test file.**

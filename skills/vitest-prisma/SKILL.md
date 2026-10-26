@@ -41,6 +41,8 @@ rolls it back. Full docs: `node_modules/vitest-prisma/README.md`, error referenc
   `vPrisma.originalClient` there, and clean up manually because those writes are not rolled back.
 - Do not use `test.concurrent` / `describe.concurrent` in files that use the database.
 - Asserting a DB error is fine: `await expect(createDuplicate()).rejects.toThrow()`, then keep querying.
+- Slow DB-heavy file that never expects query errors: `vPrisma.configure({ savepoints: false })`
+  at the top of that file (about 1.8× faster per query).
 - Debug the data a test leaves: add `vPrisma.configure({ rollback: false })` temporarily.
 
 ## Diagnose failures
